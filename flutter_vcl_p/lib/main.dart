@@ -1,31 +1,59 @@
 import 'package:flutter/material.dart';
-import './SDKManager.dart';
+import 'package:flutter/cupertino.dart';
+
+import './home_view.dart';
+import './log_view.dart';
+import './settings_view.dart';
+
+//import './vungle_sdk.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  final _pages = <Widget> [
+    HomeView(),
+    LogView(),
+    SettingsView(),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return CupertinoApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+      home: CupertinoTabScaffold(
+          tabBar: TabBars().build(context),
+          tabBuilder: (BuildContext context, int index) {
+            return _pages[index];
+          }
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
+class TabBars extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoTabBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Home'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt),
+            title: Text('Log'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            title: Text('Settings'),
+          ),
+        ]
+    );
+  }
+
+}
+/*
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -137,3 +165,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+*/
