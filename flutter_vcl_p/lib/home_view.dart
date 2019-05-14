@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import './web_server.dart';
+import 'web_server.dart';
 import 'dart:async';
 
 class HomeView extends StatefulWidget {
