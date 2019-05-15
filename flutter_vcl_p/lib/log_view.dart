@@ -60,8 +60,8 @@ class LogItemRow extends StatelessWidget {
 
 
 class _LogViewState extends State<LogView> implements LogModelListener  {
-  final model = LogModel.shared;
-  List<LogItem> logs = [];
+  final _model = LogModel.shared;
+  List<LogItem> _logs = [];
 
   void _onDelete() {
     showCupertinoDialog<bool>(context: context, builder: (context) {
@@ -74,14 +74,14 @@ class _LogViewState extends State<LogView> implements LogModelListener  {
             Navigator.pop(context, true);
           },),
           CupertinoDialogAction(child: Text("NO"),
-            isDefaultAction: true, isDestructiveAction: true, onPressed: () {
+            isDefaultAction: true, onPressed: () {
               Navigator.pop(context, false);
             }),
         ],
       );
     }).then((ret) {
       if(ret) {
-        model.clearLogs();
+        _model.clearLogs();
       }
     });
   }
@@ -90,22 +90,22 @@ class _LogViewState extends State<LogView> implements LogModelListener  {
   @override
   onNewLogs() {
     setState(() {
-      this.logs = model.logs;
+      this._logs = _model.logs;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    model.listener = this;
-    model.loadLogs();
+    _model.listener = this;
+    _model.loadLogs();
   }
 
 
   @override
   void dispose() {
     super.dispose();
-    model.listener = null;
+    _model.listener = null;
   }
 
   @override
@@ -119,14 +119,14 @@ class _LogViewState extends State<LogView> implements LogModelListener  {
         ),
       ),
       child: ListView.builder(
-          itemCount: logs.length * 2,
+          itemCount: _logs.length * 2,
           itemBuilder: (context, index) {
             if (index % 2 != 0) {
               //divider
               return Divider();
             }
             index = index~/2;
-            final item = logs[index];
+            final item = _logs[index];
             return LogItemRow(item);
           }
       ),

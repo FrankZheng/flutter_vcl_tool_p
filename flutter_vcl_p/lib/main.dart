@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       home: CupertinoTabScaffold(
           tabBar: TabBars().build(context),
           tabBuilder: (BuildContext context, int index) {
