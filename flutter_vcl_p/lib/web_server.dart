@@ -1,4 +1,12 @@
+import 'package:flutter/services.dart';
 import 'dart:async';
+
+const String WEB_SERVER_CHAN = "com.vungle.vcltool/webserver";
+const String SERVER_URL = "serverURL";
+const String END_CARD_NAME = "endCardName";
+
+const String WEB_SERVER_CALLBACK_CHAN = "com.vungle.vcltool/webserverCallbacks";
+const String END_CARD_UPLOADED = "endcardUploaded";
 
 abstract class WebServerListener {
   onServerURLAvailable(String serverURL);
@@ -10,20 +18,28 @@ class WebServer {
   static final shared = WebServer();
   List<WebServerListener> _listeners = [];
 
+  final webServerChan = MethodChannel(WEB_SERVER_CHAN);
+  final webServerCallbackChan = MethodChannel(WEB_SERVER_CALLBACK_CHAN);
+
   WebServer();
 
   start() {
-    Timer(Duration(seconds: 1), () {
+    webServerCallbackChan.setMethodCallHandler((call) {
       _listeners.forEach((listener) {
-        listener.onServerURLAvailable('http://192.168.1.88:8888');
+        listener.onEndCardUploaded(call.arguments);
       });
     });
 
-    Timer(Duration(seconds: 5), () {
+    webServerChan.invokeMethod(SERVER_URL).then((value) {
       _listeners.forEach((listener) {
-        listener.onEndCardUploaded("some_new_bundle.zip");
+        serverURL = value as String;
+        listener.onServerURLAvailable(value as String);
       });
     });
+  }
+
+  Future<String> getEndCardName() async {
+    return await webServerChan.invokeMethod(END_CARD_NAME);
   }
 
   addListener(WebServerListener listener) {

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'web_server.dart';
+import 'sdk_manager.dart';
 import 'dart:async';
 
 class HomeView extends StatefulWidget {
@@ -9,19 +10,26 @@ class HomeView extends StatefulWidget {
   _HomeViewState createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> implements WebServerListener {
+class _HomeViewState extends State<HomeView> implements WebServerListener, SDKDelegate {
 
-  String _serverURL = "http://192.168.1.68:8091";
-  String _endCardName = "bundle1.zip";
-  bool _playButtonEnabled = true;
+  String _serverURL = "";
+  String _endCardName = "";
+  bool _playButtonEnabled = false;
   String _sdkVersion = "v6.4.3";
 
-  final WebServer webServer = WebServer.shared;
+  final WebServer _webServer = WebServer.shared;
+  final SDKManager _sdkManager = SDKManager.shared;
+  bool _playingAd = false;
 
   void _onPlayButtonClicked() {
-    print('onPlayButtonClicked');
+    _sdkManager.playAd();
   }
 
+
+  @override
+  void sdkDidInitialize() {
+
+  }
 
   @override
   onServerURLAvailable(String serverURL) {
@@ -33,35 +41,47 @@ class _HomeViewState extends State<HomeView> implements WebServerListener {
 
   @override
   onEndCardUploaded(String zipName) {
-    new Timer(Duration(seconds: 2), () {
-      setState(() {
-        _playButtonEnabled = true;
-      });
-    });
+    if (!_playingAd) {
 
-    setState(() {
-      _endCardName = zipName;
-      _playButtonEnabled = false;
-    });
+      new Timer(Duration(microseconds: 100), () {
+        _sdkManager.loadAd();
+      });
+
+      setState(() {
+        _endCardName = zipName;
+        _playButtonEnabled = false;
+      });
+    }
+
   }
 
   @override
   void initState() {
     super.initState();
 
-    if(webServer.serverURL != null) {
-      _serverURL = webServer.serverURL;
+    _sdkManager.addDelegate(this);
+
+    if(_webServer.serverURL != null) {
+      _serverURL = _webServer.serverURL;
     }
 
-    webServer.addListener(this);
-    webServer.start();
+    _webServer.addListener(this);
+    _webServer.start();
+    _webServer.getEndCardName().then((name) {
+      if(name != null ) {
+        _sdkManager.loadAd();
+        setState(() {
+          _endCardName = name;
+        });
+      }
+    });
   }
 
 
   @override
   void dispose() {
     super.dispose();
-    webServer.removeListener(this);
+    _webServer.removeListener(this);
   }
 
   @override
@@ -116,5 +136,36 @@ class _HomeViewState extends State<HomeView> implements WebServerListener {
           )
       ),
     );
+  }
+
+  @override
+  void onAdLoaded() {
+    setState(() {
+      _playButtonEnabled = true;
+    });
+  }
+
+  @override
+  void onAdDidPlay() {
+
+    setState(() {
+      _playingAd = true;
+      _playButtonEnabled = false;
+    });
+  }
+
+  @override
+  void onAdDidClose() {
+    setState(() {
+      _playingAd = false;
+    });
+    new Timer(Duration(seconds: 1), () {
+       _sdkManager.loadAd();
+    });
+  }
+
+  @override
+  void onSDKLog(String message) {
+
   }
 }
