@@ -12,7 +12,11 @@
 #import "SDKManagerProxy.h"
 #import "SDKManagerProtocol.h"
 #import "ResourceManager.h"
-
+#import "JSLog.h"
+#import "JSError.h"
+#import "JSTrace.h"
+#import "SDKLog.h"
+#import "LogItem.h"
 
 
 
@@ -36,11 +40,14 @@
 #define kAppConfigChan @"com.vungle.vcltool/appConfig"
 
 #define kLogModelChan @"com.vungle.vcltool/logModel"
+#define kLogs @"logs"
+#define kClearLogs @"clearLogs"
 
 #define kLogModelCallbackChan @"com.vungle.vcltool/logModelCallback"
+#define kNewLogs @"newLogs"
 
 
-@interface FlutterMediator() <SDKDelegate, WebServerDelegate>
+@interface FlutterMediator() <SDKDelegate, WebServerDelegate, LogViewModelDelegate>
 @property(nonnull, strong) FlutterViewController *controller;
 @property(nonnull, strong) FlutterMethodChannel *sdkChan;
 @property(nonnull, strong) FlutterMethodChannel *sdkCallbackChan;
@@ -85,6 +92,7 @@
     [_webServer setDelegate:self];
     
     _logModel = [LogViewModel sharedInstance];
+    _logModel.delegate = self;
     _appConfig = [AppConfig sharedConfig];
     _resourceManager = [ResourceManager sharedInstance];
     
@@ -152,7 +160,37 @@
 }
 
 - (void)handleLogModelMethods:(FlutterMethodCall *)call result:(FlutterResult)result {
-    
+    if([kLogs isEqualToString:call.method]) {
+        NSMutableArray* res = [NSMutableArray array];
+        NSArray<LogItem*> *logs = _logModel.logs;
+        for(LogItem *item in logs) {
+            NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+            if ([item isKindOfClass:[JSLog class]]) {
+                dict[@"type"] = @"log";
+                dict[@"message"] = item.message;
+            } else if([item isKindOfClass:[JSError class]]) {
+                dict[@"type"] = @"error";
+                dict[@"message"] = item.message;
+                dict[@"stack"] = ((JSError*)item).stack;
+                dict[@"name"] = ((JSError*)item).name;
+            } else if([item isKindOfClass:[JSTrace class]]) {
+                dict[@"type"] = @"trace";
+                dict[@"message"] = item.message;
+                dict[@"stack"] = ((JSTrace*)item).stack;
+            } else if([item isKindOfClass:[SDKLog class]]) {
+                dict[@"type"] = @"sdk";
+                dict[@"message"] = item.message;
+            }
+            [res addObject:dict];
+        }
+        result([res copy]);
+    } else if([kClearLogs isEqualToString:call.method]) {
+        [_logModel clearLogs];
+        result(@(YES));
+    }
+    else {
+        result(FlutterMethodNotImplemented);
+    }
 }
 
 
@@ -177,6 +215,11 @@
     [_webServerCallbackChan invokeMethod:kEndcardUploaded arguments:zipName];
 }
 
+#pragma mark - LogViewModelDelegate methods
+
+-(void)onNewLogs {
+    [_logModelCallbackChan invokeMethod:kNewLogs arguments:nil];
+}
 
 
 

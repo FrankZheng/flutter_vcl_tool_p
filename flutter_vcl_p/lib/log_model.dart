@@ -1,5 +1,11 @@
 import 'dart:async';
+import 'package:flutter/services.dart';
 
+const LOG_CHAN = "com.vungle.vcltool/logModel";
+const LOGS = "logs";
+const LOG_CALLBACK_CHAN = "com.vungle.vcltool/logModelCallback";
+const NEW_LOGS = "newLogs";
+const CLEAR_LOGS = "clearLogs";
 
 class LogItem {
   final DateTime timestamp;
@@ -37,46 +43,61 @@ abstract class LogModelListener {
 class LogModel {
   static final shared = LogModel();
 
-  List<LogItem> logs = [];
-
   LogModelListener listener;
+
+  final logChan = MethodChannel(LOG_CHAN);
+  final logCallbackChan = MethodChannel(LOG_CALLBACK_CHAN);
 
   LogModel();
 
-  loadLogs() {
-    //mock some logs
-    var jsLog = new JSLog("Start", DateTime.now());
-    var jsError = new JSError(
-        "ReferenceError: Can't find variable: not_existed_function",
-        DateTime.now(),
-        "ReferenceError",
-        ["doSomething -- index.html:34:25", "onClick -- index.html:48:12"]);
-
-    var jsTrace = new JSTrace("Trace", DateTime.now(),
-        [
-          "test_trace -- index.html:40:16",
-          "doSomething -- index.html:34:15",
-          "onclick -- index.html.html:52:12"
-        ]);
-
-    var sdkLog = new SDKLog("SDK initialized ", DateTime.now());
-
-    logs.addAll([jsLog, jsError, jsTrace, sdkLog]);
-
-    new Timer(Duration(seconds: 2), () {
-      if(listener != null) {
-        listener.onNewLogs();
+  start() {
+    logCallbackChan.setMethodCallHandler((call) {
+      if(call.method == NEW_LOGS) {
+        if(listener != null) {
+          listener.onNewLogs();
+        }
       }
     });
+  }
 
+  Future<List<LogItem>> getLogs() async {
+    final List<dynamic> res = await logChan.invokeMethod(LOGS);
+    var logs = <LogItem>[];
+    res.forEach((map) {
+      if (map.containsKey("type")) {
+        String type = map["type"];
+        String message = map["message"];
+        List<String> stack = [];
+        if(map.containsKey("stack")) {
+          List<dynamic> s = map["stack"];
+          s.forEach((ss) {
+            stack.add(ss as String);
+          });
+
+        }
+        switch(type) {
+          case "log":
+            logs.add(new JSLog(message, DateTime.now()));
+            break;
+          case "error":
+            logs.add(new JSError(message, DateTime.now(), map["name"], stack));
+            break;
+          case "trace":
+            logs.add(new JSTrace(message, DateTime.now(), stack));
+            break;
+          case "sdk":
+            logs.add(new SDKLog(message, DateTime.now()));
+            break;
+          default:
+            break;
+        }
+      }
+    });
+    return logs;
   }
 
   clearLogs() {
-    logs = [];
-
-    if(listener != null) {
-      listener.onNewLogs();
-    }
+    logChan.invokeMethod(CLEAR_LOGS);
   }
 
 
