@@ -15,7 +15,7 @@ class _HomeViewState extends State<HomeView> implements WebServerListener, SDKDe
   String _serverURL = "";
   String _endCardName = "";
   bool _playButtonEnabled = false;
-  String _sdkVersion = "v6.4.3";
+  String _sdkVersion = "";
 
   final WebServer _webServer = WebServer.shared;
   final SDKManager _sdkManager = SDKManager.shared;
@@ -60,6 +60,11 @@ class _HomeViewState extends State<HomeView> implements WebServerListener, SDKDe
     super.initState();
 
     _sdkManager.addDelegate(this);
+    _sdkManager.getSDKVersion().then((v) {
+      setState(() {
+        _sdkVersion = v;
+      });
+    });
 
     if(_webServer.serverURL != null) {
       _serverURL = _webServer.serverURL;
@@ -168,4 +173,5 @@ class _HomeViewState extends State<HomeView> implements WebServerListener, SDKDe
   void onSDKLog(String message) {
 
   }
+
 }

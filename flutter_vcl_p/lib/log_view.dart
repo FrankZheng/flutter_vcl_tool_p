@@ -13,8 +13,8 @@ class LogItemRow extends StatelessWidget {
   LogItemRow(this.logItem);
 
   static const ROW_PADDING = EdgeInsets.only(
-    left: 8.0,
-    right: 8.0,
+    left: 0,
+    right: 0,
     top: 2.0,
     bottom: 2.0
   );
@@ -124,21 +124,26 @@ class _LogViewState extends State<LogView> implements LogModelListener  {
       navigationBar: CupertinoNavigationBar(
         middle: Text('Log'),
         trailing: CupertinoButton(
-            child: Icon(Icons.delete),
+            child: Icon(CupertinoIcons.delete),
             onPressed: _onDelete,
         ),
       ),
-      child: ListView.builder(
-          itemCount: _logs.length * 2,
-          itemBuilder: (context, index) {
-            if (index % 2 != 0) {
-              //divider
-              return Divider();
-            }
-            index = index~/2;
-            final item = _logs[index];
-            return LogItemRow(item);
-          }
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+              itemCount: _logs.length * 2,
+              itemBuilder: (context, index) {
+                if (index % 2 != 0) {
+                  //divider
+                  return Divider();
+                }
+                index = index~/2;
+                final item = _logs[index];
+                return LogItemRow(item);
+              }
+          ),
+        ),
       ),
     );
   }

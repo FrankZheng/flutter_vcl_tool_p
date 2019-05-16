@@ -1,15 +1,15 @@
 import 'package:flutter/services.dart';
 
-const String SDK_CHAN = "com.vungle.vcltool/sdk";
-const String LOAD_AD = "loadAd";
-const String PLAY_AD = "playAd";
-const String FORCE_CLOSE_AD = "forceCloseAd";
+const SDK_CHAN = "com.vungle.vcltool/sdk";
+const LOAD_AD = "loadAd";
+const PLAY_AD = "playAd";
+const FORCE_CLOSE_AD = "forceCloseAd";
+const SDK_VERSION = "sdkVersion";
 
-const String SDK_CALLBACK_CHAN = "com.vungle.vcltool/sdkCallbacks";
-const String AD_LOADED = "adLoaded";
-const String AD_DID_PLAY = "adDidPlay";
-const String AD_DID_CLOSE = "adDidClose";
-
+const SDK_CALLBACK_CHAN = "com.vungle.vcltool/sdkCallbacks";
+const AD_LOADED = "adLoaded";
+const AD_DID_PLAY = "adDidPlay";
+const AD_DID_CLOSE = "adDidClose";
 
 
 abstract class SDKDelegate {
@@ -18,8 +18,6 @@ abstract class SDKDelegate {
   void onAdDidPlay();
   void onAdDidClose();
   void onSDKLog(String message);
-
-
 }
 
 class SDKManager {
@@ -54,23 +52,26 @@ class SDKManager {
     return await sdkChan.invokeMethod(FORCE_CLOSE_AD);
   }
 
+  Future<String> getSDKVersion() async {
+    return await sdkChan.invokeMethod(SDK_VERSION);
+  }
   Future<dynamic> _onCallback(MethodCall call) async {
     switch (call.method) {
       case AD_LOADED:
         delegates.forEach((delegate) {
           delegate.onAdLoaded();
         });
-        return;
+        break;
       case AD_DID_CLOSE:
         delegates.forEach((delegate) {
           delegate.onAdDidClose();
         });
-        return;
+        break;
       case AD_DID_PLAY:
         delegates.forEach((delegate) {
           delegate.onAdDidPlay();
         });
-        return;
+        break;
       default:
         throw MissingPluginException();
     }

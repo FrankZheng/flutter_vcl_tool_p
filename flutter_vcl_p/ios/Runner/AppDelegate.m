@@ -20,11 +20,6 @@
     FlutterViewController *controller = (FlutterViewController*)self.window.rootViewController;
     [[FlutterMediator sharedInstance] startWithFlutterViewController:controller];
     
-#if 1
-    [[AppConfig sharedConfig] setVerifyRequiredJsCalls:NO];
-    
-#endif
-    
     return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 

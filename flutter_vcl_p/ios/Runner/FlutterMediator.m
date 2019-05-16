@@ -19,35 +19,49 @@
 #import "LogItem.h"
 
 
-
+//SDK channel and method names
 #define kSDKChan @"com.vungle.vcltool/sdk"
 #define kLoadAd @"loadAd"
 #define kPlayAd @"playAd"
 #define kForceCloseAd @"forceCloseAd"
+#define kSDKVerson @"sdkVersion"
 
+//SDK callbacks channel and method names
 #define kSDKCallbackChan @"com.vungle.vcltool/sdkCallbacks"
 #define kAdLoaded @"adLoaded"
 #define kAdDidPlay @"adDidPlay"
 #define kAdDidClose @"adDidClose"
 
+//Web Server channel and method names
 #define kWebServerChan @"com.vungle.vcltool/webserver"
 #define kEndcardName @"endCardName"
 #define kServerURL @"serverURL"
 
+//Web Server callbacks channel and method names
 #define kWebServerCallbackChan @"com.vungle.vcltool/webserverCallbacks"
 #define kEndcardUploaded @"endcardUploaded"
 
+//App Config channel and method names
 #define kAppConfigChan @"com.vungle.vcltool/appConfig"
+#define kCurrentSDKVersion @"currentSDKVersion"
+#define kSDKVersions @"sdkVersions"
+#define kSetCurrentSDKVersion @"setCurrentSDKVersion"
+#define kCORsEnabled @"isCORsEnabled"
+#define kSetCORsEnabled @"setCORsEnabled"
+#define kVerifyJsCalls @"verifyJsCalls"
+#define kSetVerifyJsCalls @"setVerifyJsCalls"
 
+//Log Model channel and method names
 #define kLogModelChan @"com.vungle.vcltool/logModel"
 #define kLogs @"logs"
 #define kClearLogs @"clearLogs"
 
+//Log Model callbacks channel and method names
 #define kLogModelCallbackChan @"com.vungle.vcltool/logModelCallback"
 #define kNewLogs @"newLogs"
 
 
-@interface FlutterMediator() <SDKDelegate, WebServerDelegate, LogViewModelDelegate>
+@interface FlutterMediator() <SDKDelegate, WebServerDelegate, LogViewModelDelegate, UIAlertViewDelegate>
 @property(nonnull, strong) FlutterViewController *controller;
 @property(nonnull, strong) FlutterMethodChannel *sdkChan;
 @property(nonnull, strong) FlutterMethodChannel *sdkCallbackChan;
@@ -132,6 +146,8 @@
         [_sdkManager playAd:_controller enableCORs:[_appConfig isCORsEnabled]];
     } else if([kForceCloseAd isEqualToString:call.method]) {
         [_sdkManager forceCloseAd];
+    } else if([kSDKVerson isEqualToString:call.method]) {
+        result(_sdkManager.sdkVersion);
     } else {
         result(FlutterMethodNotImplemented);
         return;
@@ -156,7 +172,35 @@
 }
 
 - (void)handleAppConfigMethods:(FlutterMethodCall *)call result:(FlutterResult)result {
-    
+    if ([kCurrentSDKVersion isEqualToString:call.method]) {
+        result(_appConfig.currentSdkVersion);
+    } else if([kSDKVersions isEqualToString:call.method]) {
+        result(_appConfig.sdkVersions);
+    } else if([kSetCurrentSDKVersion isEqualToString:call.method]) {
+        NSString *newVersion = call.arguments;
+        if(![_appConfig.currentSdkVersion isEqualToString:newVersion]) {
+            [_appConfig setCurrentSDKVersion:newVersion];
+            
+            [[UIApplication sharedApplication] performSelector:@selector(suspend)];
+            [NSThread sleepForTimeInterval:2.0];
+            exit(0);
+        }
+        result(@(YES));
+    } else if([kCORsEnabled isEqualToString:call.method]) {
+        result(@(_appConfig.isCORsEnabled));
+    } else if([kSetCORsEnabled isEqualToString:call.method]) {
+        NSNumber *num = call.arguments;
+        [_appConfig setCORsEnabled:num.boolValue];
+        result(@(YES));
+    } else if([kVerifyJsCalls isEqualToString:call.method]) {
+        result(@(_appConfig.verifyRequiredJsCalls));
+    } else if([kSetVerifyJsCalls isEqualToString:call.method]) {
+        NSNumber *num = call.arguments;
+        [_appConfig setVerifyRequiredJsCalls:num.boolValue];
+        result(@(YES));
+    } else {
+        result(FlutterMethodNotImplemented);
+    }
 }
 
 - (void)handleLogModelMethods:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -207,6 +251,23 @@
 - (void)onAdDidClose {
     [_sdkCallbackChan invokeMethod:kAdDidClose arguments:nil];
 }
+
+- (void)onJSError:(NSString *)jsError {
+    //[_sdkCallbackChan invokeMethod:kOnJsErrors arguments:jsError];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm Close Ad"
+                                                    message:@"Some JS error happened, close ad?"
+                                                   delegate:self
+                                          cancelButtonTitle:@"NO"
+                                          otherButtonTitles:@"YES", nil];
+    [alert show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if(buttonIndex == 1) {
+        [_sdkManager forceCloseAd];
+    }
+}
+
 
 
 #pragma mark - WebServerDelegate methods
