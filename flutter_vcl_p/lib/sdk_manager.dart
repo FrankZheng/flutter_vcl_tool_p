@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'log_model.dart';
 
 const SDK_CHAN = "com.vungle.vcltool/sdk";
 const LOAD_AD = "loadAd";
@@ -10,6 +11,7 @@ const SDK_CALLBACK_CHAN = "com.vungle.vcltool/sdkCallbacks";
 const AD_LOADED = "adLoaded";
 const AD_DID_PLAY = "adDidPlay";
 const AD_DID_CLOSE = "adDidClose";
+const ON_LOG = "onLog";
 
 
 abstract class SDKDelegate {
@@ -20,6 +22,10 @@ abstract class SDKDelegate {
   void onSDKLog(String message);
 }
 
+abstract class SDKLogDelegate {
+  void onLog(String type, String rawLog);
+}
+
 class SDKManager {
   static final shared = SDKManager();
 
@@ -28,9 +34,15 @@ class SDKManager {
 
   SDKManager() {
     sdkCallChan.setMethodCallHandler(_onCallback);
+
+    //register log model as log listener
+    //it's not a good place here
+    logDelegate = LogModel.shared;
   }
 
   var delegates = <SDKDelegate>[];
+
+  SDKLogDelegate logDelegate;
 
   void addDelegate(SDKDelegate delegate) {
     delegates.add(delegate);
@@ -71,6 +83,16 @@ class SDKManager {
         delegates.forEach((delegate) {
           delegate.onAdDidPlay();
         });
+        break;
+      case ON_LOG:
+        if(logDelegate != null) {
+          var args = call.arguments;
+          if(args.containsKey("type") && args.containsKey("rawLog")) {
+            String type = args["type"] as String;
+            String rawLog = args["rawLog"] as String;
+            logDelegate.onLog(type, rawLog);
+          }
+        }
         break;
       default:
         throw MissingPluginException();

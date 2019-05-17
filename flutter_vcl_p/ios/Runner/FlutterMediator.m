@@ -8,15 +8,9 @@
 #import "FlutterMediator.h"
 #import "WebServer.h"
 #import "AppConfig.h"
-#import "LogViewModel.h"
 #import "SDKManagerProxy.h"
 #import "SDKManagerProtocol.h"
 #import "ResourceManager.h"
-#import "JSLog.h"
-#import "JSError.h"
-#import "JSTrace.h"
-#import "SDKLog.h"
-#import "LogItem.h"
 
 
 //SDK channel and method names
@@ -31,6 +25,7 @@
 #define kAdLoaded @"adLoaded"
 #define kAdDidPlay @"adDidPlay"
 #define kAdDidClose @"adDidClose"
+#define kOnLog @"onLog"
 
 //Web Server channel and method names
 #define kWebServerChan @"com.vungle.vcltool/webserver"
@@ -51,28 +46,15 @@
 #define kVerifyJsCalls @"verifyJsCalls"
 #define kSetVerifyJsCalls @"setVerifyJsCalls"
 
-//Log Model channel and method names
-#define kLogModelChan @"com.vungle.vcltool/logModel"
-#define kLogs @"logs"
-#define kClearLogs @"clearLogs"
-
-//Log Model callbacks channel and method names
-#define kLogModelCallbackChan @"com.vungle.vcltool/logModelCallback"
-#define kNewLogs @"newLogs"
-
-
-@interface FlutterMediator() <SDKDelegate, WebServerDelegate, LogViewModelDelegate, UIAlertViewDelegate>
+@interface FlutterMediator() <SDKDelegate, WebServerDelegate, UIAlertViewDelegate>
 @property(nonnull, strong) FlutterViewController *controller;
 @property(nonnull, strong) FlutterMethodChannel *sdkChan;
 @property(nonnull, strong) FlutterMethodChannel *sdkCallbackChan;
 @property(nonnull, strong) FlutterMethodChannel *webServerChan;
 @property(nonnull, strong) FlutterMethodChannel *webServerCallbackChan;
 @property(nonnull, strong) FlutterMethodChannel *appConfigChan;
-@property(nonnull, strong) FlutterMethodChannel *logModelChan;
-@property(nonnull, strong) FlutterMethodChannel *logModelCallbackChan;
 
 @property(nonnull, strong) AppConfig* appConfig;
-@property(nonnull, strong) LogViewModel* logModel;
 @property(nonnull, strong) id<SDKManagerProtocol> sdkManager;
 @property(nonnull, strong) WebServer* webServer;
 @property(nonnull, strong) ResourceManager *resourceManager;
@@ -105,8 +87,6 @@
     _webServer = [WebServer sharedInstance];
     [_webServer setDelegate:self];
     
-    _logModel = [LogViewModel sharedInstance];
-    _logModel.delegate = self;
     _appConfig = [AppConfig sharedConfig];
     _resourceManager = [ResourceManager sharedInstance];
     
@@ -131,12 +111,6 @@
     [_appConfigChan setMethodCallHandler:^(FlutterMethodCall * _Nonnull call, FlutterResult  _Nonnull result) {
         [weakSelf handleAppConfigMethods:call result:result];
     }];
-    
-    _logModelChan = [FlutterMethodChannel methodChannelWithName:kLogModelChan binaryMessenger:_controller];
-    [_logModelChan setMethodCallHandler:^(FlutterMethodCall * _Nonnull call, FlutterResult  _Nonnull result) {
-        [weakSelf handleLogModelMethods:call result:result];
-    }];
-    _logModelCallbackChan = [FlutterMethodChannel methodChannelWithName:kLogModelCallbackChan binaryMessenger:_controller];
 }
 
 - (void)handleSDKMethods:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -203,41 +177,6 @@
     }
 }
 
-- (void)handleLogModelMethods:(FlutterMethodCall *)call result:(FlutterResult)result {
-    if([kLogs isEqualToString:call.method]) {
-        NSMutableArray* res = [NSMutableArray array];
-        NSArray<LogItem*> *logs = _logModel.logs;
-        for(LogItem *item in logs) {
-            NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-            if ([item isKindOfClass:[JSLog class]]) {
-                dict[@"type"] = @"log";
-                dict[@"message"] = item.message;
-            } else if([item isKindOfClass:[JSError class]]) {
-                dict[@"type"] = @"error";
-                dict[@"message"] = item.message;
-                dict[@"stack"] = ((JSError*)item).stack;
-                dict[@"name"] = ((JSError*)item).name;
-            } else if([item isKindOfClass:[JSTrace class]]) {
-                dict[@"type"] = @"trace";
-                dict[@"message"] = item.message;
-                dict[@"stack"] = ((JSTrace*)item).stack;
-            } else if([item isKindOfClass:[SDKLog class]]) {
-                dict[@"type"] = @"sdk";
-                dict[@"message"] = item.message;
-            }
-            [res addObject:dict];
-        }
-        result([res copy]);
-    } else if([kClearLogs isEqualToString:call.method]) {
-        [_logModel clearLogs];
-        result(@(YES));
-    }
-    else {
-        result(FlutterMethodNotImplemented);
-    }
-}
-
-
 #pragma mark - SDKDelegate methods
 
 - (void)onAdLoaded:(nullable NSError *)error {
@@ -253,7 +192,9 @@
 }
 
 - (void)onJSError:(NSString *)jsError {
-    //[_sdkCallbackChan invokeMethod:kOnJsErrors arguments:jsError];
+    [_sdkCallbackChan invokeMethod:kOnLog
+                         arguments:@{@"type":@"error", @"rawLog":jsError}];
+    
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm Close Ad"
                                                     message:@"Some JS error happened, close ad?"
                                                    delegate:self
@@ -268,20 +209,24 @@
     }
 }
 
+- (void)onJSLog:(NSString *)jsLog {
+    [_sdkCallbackChan invokeMethod:kOnLog
+                         arguments:@{@"type":@"log", @"rawLog":jsLog}];
+}
 
+- (void)onJSTrace:(NSString *)jsTrace {
+    [_sdkCallbackChan invokeMethod:kOnLog
+                         arguments:@{@"type":@"trace", @"rawLog":jsTrace}];
+}
+
+- (void)onSDKLog:(NSString *)message {
+    [_sdkCallbackChan invokeMethod:kOnLog
+                         arguments:@{@"type":@"sdk", @"rawLog":message}];
+}
 
 #pragma mark - WebServerDelegate methods
-
 -(void)onEndcardUploaded:(NSString *)zipName {
     [_webServerCallbackChan invokeMethod:kEndcardUploaded arguments:zipName];
 }
-
-#pragma mark - LogViewModelDelegate methods
-
--(void)onNewLogs {
-    [_logModelCallbackChan invokeMethod:kNewLogs arguments:nil];
-}
-
-
 
 @end

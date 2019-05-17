@@ -10,7 +10,6 @@
 #import "WebServer.h"
 #import "ResourceManager.h"
 #import "SDKManagerProxy.h"
-#import "LogViewModel.h"
 #import "AppConfig.h"
 
 
@@ -65,12 +64,6 @@
     sdkManager.appId = [AppConfig appId];
     sdkManager.placementId = [AppConfig placementId];
     sdkManager.networkLoggingEnabled = YES;
-    
-    //initialize log model
-    LogViewModel *model = [LogViewModel sharedInstance];
-    [sdkManager addDelegate:model];
-    model.jsLogsFolderPath = resourceManager.jsLogsFolderPath;
-    [model loadLogs];
     
     _initialized = YES;
     for(NSValue *value in _delegates) {

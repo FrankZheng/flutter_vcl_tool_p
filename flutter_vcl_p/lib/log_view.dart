@@ -89,26 +89,24 @@ class _LogViewState extends State<LogView> implements LogModelListener  {
 
   @override
   onNewLogs() {
-    _model.getLogs().then((logs) {
-      setState(() {
-        this._logs = logs;
-      });
+    setState(() {
+      this._logs = _model.logs();
     });
-
   }
 
   @override
   void initState() {
     super.initState();
     _model.listener = this;
-    _model.start();
-    _model.getLogs().then((logs){
-      if(logs.length > 0) {
+
+    _model.loadLogs().then((v) {
+      if(v) {
         setState(() {
-          _logs = logs;
+          _logs = _model.logs();
         });
       }
     });
+
   }
 
 

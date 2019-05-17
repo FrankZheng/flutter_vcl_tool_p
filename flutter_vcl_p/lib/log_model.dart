@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'package:flutter/services.dart';
+import 'dart:convert';
+import 'package:path/path.dart';
+import 'sdk_manager.dart';
 
-const LOG_CHAN = "com.vungle.vcltool/logModel";
-const LOGS = "logs";
-const LOG_CALLBACK_CHAN = "com.vungle.vcltool/logModelCallback";
-const NEW_LOGS = "newLogs";
-const CLEAR_LOGS = "clearLogs";
 
 class LogItem {
   final DateTime timestamp;
@@ -40,68 +37,96 @@ abstract class LogModelListener {
   onNewLogs();
 }
 
-class LogModel {
+class LogModel implements SDKLogDelegate {
   static final shared = LogModel();
+  List<LogItem> _logs = [];
 
   LogModelListener listener;
 
-  final logChan = MethodChannel(LOG_CHAN);
-  final logCallbackChan = MethodChannel(LOG_CALLBACK_CHAN);
-
   LogModel();
 
-  start() {
-    logCallbackChan.setMethodCallHandler((call) {
-      if(call.method == NEW_LOGS) {
-        if(listener != null) {
-          listener.onNewLogs();
-        }
-      }
-    });
+  Future<bool> loadLogs() async {
+    //load logs from database
+    return true;
   }
 
   Future<List<LogItem>> getLogs() async {
-    final List<dynamic> res = await logChan.invokeMethod(LOGS);
-    var logs = <LogItem>[];
-    res.forEach((map) {
-      if (map.containsKey("type")) {
-        String type = map["type"];
-        String message = map["message"];
-        List<String> stack = [];
-        if(map.containsKey("stack")) {
-          List<dynamic> s = map["stack"];
-          s.forEach((ss) {
-            stack.add(ss as String);
-          });
 
-        }
-        switch(type) {
-          case "log":
-            logs.add(new JSLog(message, DateTime.now()));
-            break;
-          case "error":
-            logs.add(new JSError(message, DateTime.now(), map["name"], stack));
-            break;
-          case "trace":
-            logs.add(new JSTrace(message, DateTime.now(), stack));
-            break;
-          case "sdk":
-            logs.add(new SDKLog(message, DateTime.now()));
-            break;
-          default:
-            break;
-        }
-      }
-    });
-    return logs;
+    return _logs;
+  }
+
+  List<LogItem> logs() {
+    return _logs;
   }
 
   clearLogs() {
-    logChan.invokeMethod(CLEAR_LOGS);
+    _logs = [];
+    //delete all logs from the database
   }
 
+  @override
+  void onLog(String type, String rawLog) {
+    //parse the rawLog, create log objects
+    //save to the database
+    //fire the listener
+    LogItem logItem;
+    switch(type) {
+      case "log":
+        logItem = new JSLog(rawLog, DateTime.now());
+        break;
+      case "sdk":
+        logItem = new SDKLog(rawLog, DateTime.now());
+        break;
+      case "error":
+        logItem = parseJsError(rawLog);
+        break;
+      case "trace":
+        logItem = parseJsTrace(rawLog);
+        break;
+    }
+    _logs.add(logItem);
 
+    if (listener != null) {
+      listener.onNewLogs();
+    }
+  }
 
+  LogItem parseJsError(String rawLog) {
+    Map<String, dynamic> json = jsonDecode(rawLog);
+    String msg = json['msg'] as String;
+    String name = json['errName'] as String;
+    String stack = json['stack'] as String;
+    var stackLines = parseStack(stack);
+    return JSError(msg, DateTime.now(), name, stackLines);
+  }
+
+  LogItem parseJsTrace(String rawLog) {
+    String msg = "Trace";
+    var stackLines = parseStack(rawLog);
+    if(stackLines.length > 0) {
+      stackLines.removeAt(0);
+    }
+    return JSTrace(msg, DateTime.now(), stackLines);
+  }
+
+  List<String> parseStack(String stack) {
+    List<String> res = [];
+    var lines = stack.split("\n");
+    lines.forEach((line) {
+      var components = line.split("@");
+      if(components.length > 1) {
+        var func = components[0];
+        var filePath = components[1];
+        var filename = basename(filePath);
+        res.add("$func -- $filename");
+      } else if(components.length == 1) {
+        var filePath = components[0];
+        var filename = basename(filePath);
+        res.add("(anonymous function) -- $filename");
+      }
+    });
+    return res;
+  }
 
 
 }

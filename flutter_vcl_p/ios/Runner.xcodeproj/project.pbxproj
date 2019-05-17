@@ -30,15 +30,9 @@
 		FC324E9A228BC7360007BE08 /* ok.json in Resources */ = {isa = PBXBuildFile; fileRef = FC324E97228BC7360007BE08 /* ok.json */; };
 		FC324E9B228BC7360007BE08 /* ads.json in Resources */ = {isa = PBXBuildFile; fileRef = FC324E98228BC7360007BE08 /* ads.json */; };
 		FC324EB2228BD4830007BE08 /* ResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324E9C228BD4820007BE08 /* ResourceManager.m */; };
-		FC324EB3228BD4830007BE08 /* SDKLog.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324E9E228BD4820007BE08 /* SDKLog.m */; };
-		FC324EB4228BD4830007BE08 /* JSError.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EA0228BD4820007BE08 /* JSError.m */; };
-		FC324EB5228BD4830007BE08 /* JSTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EA3228BD4830007BE08 /* JSTrace.m */; };
 		FC324EB6228BD4830007BE08 /* AppInitializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EA4228BD4830007BE08 /* AppInitializer.m */; };
-		FC324EB7228BD4830007BE08 /* JSLog.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EA5228BD4830007BE08 /* JSLog.m */; };
-		FC324EB8228BD4830007BE08 /* LogViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EA8228BD4830007BE08 /* LogViewModel.m */; };
 		FC324EB9228BD4830007BE08 /* SDKManagerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EA9228BD4830007BE08 /* SDKManagerProxy.m */; };
 		FC324EBA228BD4840007BE08 /* WebServer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EAA228BD4830007BE08 /* WebServer.m */; };
-		FC324EBB228BD4840007BE08 /* LogItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EAC228BD4830007BE08 /* LogItem.m */; };
 		FC324EBC228BD4840007BE08 /* AppConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EAF228BD4830007BE08 /* AppConfig.m */; };
 		FC324EC0228BD7B30007BE08 /* FlutterMediator.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EBF228BD7B30007BE08 /* FlutterMediator.m */; };
 /* End PBXBuildFile section */
@@ -86,23 +80,11 @@
 		FC324E97228BC7360007BE08 /* ok.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ok.json; sourceTree = "<group>"; };
 		FC324E98228BC7360007BE08 /* ads.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ads.json; sourceTree = "<group>"; };
 		FC324E9C228BD4820007BE08 /* ResourceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResourceManager.m; sourceTree = "<group>"; };
-		FC324E9D228BD4820007BE08 /* SDKLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDKLog.h; sourceTree = "<group>"; };
-		FC324E9E228BD4820007BE08 /* SDKLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDKLog.m; sourceTree = "<group>"; };
 		FC324E9F228BD4820007BE08 /* WebServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebServer.h; sourceTree = "<group>"; };
-		FC324EA0228BD4820007BE08 /* JSError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSError.m; sourceTree = "<group>"; };
-		FC324EA1228BD4830007BE08 /* JSLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSLog.h; sourceTree = "<group>"; };
 		FC324EA2228BD4830007BE08 /* ResourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourceManager.h; sourceTree = "<group>"; };
-		FC324EA3228BD4830007BE08 /* JSTrace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSTrace.m; sourceTree = "<group>"; };
 		FC324EA4228BD4830007BE08 /* AppInitializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppInitializer.m; sourceTree = "<group>"; };
-		FC324EA5228BD4830007BE08 /* JSLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSLog.m; sourceTree = "<group>"; };
-		FC324EA6228BD4830007BE08 /* LogItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogItem.h; sourceTree = "<group>"; };
-		FC324EA7228BD4830007BE08 /* LogViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewModel.h; sourceTree = "<group>"; };
-		FC324EA8228BD4830007BE08 /* LogViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogViewModel.m; sourceTree = "<group>"; };
 		FC324EA9228BD4830007BE08 /* SDKManagerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDKManagerProxy.m; sourceTree = "<group>"; };
 		FC324EAA228BD4830007BE08 /* WebServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebServer.m; sourceTree = "<group>"; };
-		FC324EAB228BD4830007BE08 /* JSTrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSTrace.h; sourceTree = "<group>"; };
-		FC324EAC228BD4830007BE08 /* LogItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogItem.m; sourceTree = "<group>"; };
-		FC324EAD228BD4830007BE08 /* JSError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSError.h; sourceTree = "<group>"; };
 		FC324EAE228BD4830007BE08 /* SDKManagerProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDKManagerProxy.h; sourceTree = "<group>"; };
 		FC324EAF228BD4830007BE08 /* AppConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppConfig.m; sourceTree = "<group>"; };
 		FC324EB0228BD4830007BE08 /* AppConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppConfig.h; sourceTree = "<group>"; };
@@ -178,23 +160,11 @@
 				FC324EA4228BD4830007BE08 /* AppInitializer.m */,
 				FC324EA2228BD4830007BE08 /* ResourceManager.h */,
 				FC324E9C228BD4820007BE08 /* ResourceManager.m */,
-				FC324EA7228BD4830007BE08 /* LogViewModel.h */,
-				FC324EA8228BD4830007BE08 /* LogViewModel.m */,
 				FC324EBD228BD5930007BE08 /* SDKManagerProtocol.h */,
 				FC324EAE228BD4830007BE08 /* SDKManagerProxy.h */,
 				FC324EA9228BD4830007BE08 /* SDKManagerProxy.m */,
 				FC324E9F228BD4820007BE08 /* WebServer.h */,
 				FC324EAA228BD4830007BE08 /* WebServer.m */,
-				FC324EAD228BD4830007BE08 /* JSError.h */,
-				FC324EA0228BD4820007BE08 /* JSError.m */,
-				FC324EA1228BD4830007BE08 /* JSLog.h */,
-				FC324EA5228BD4830007BE08 /* JSLog.m */,
-				FC324EAB228BD4830007BE08 /* JSTrace.h */,
-				FC324EA3228BD4830007BE08 /* JSTrace.m */,
-				FC324EA6228BD4830007BE08 /* LogItem.h */,
-				FC324EAC228BD4830007BE08 /* LogItem.m */,
-				FC324E9D228BD4820007BE08 /* SDKLog.h */,
-				FC324E9E228BD4820007BE08 /* SDKLog.m */,
 				7AFFD8ED1D35381100E5BB4D /* AppDelegate.h */,
 				7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */,
 				FC324EBE228BD7B30007BE08 /* FlutterMediator.h */,
@@ -391,18 +361,12 @@
 			files = (
 				FC324EB6228BD4830007BE08 /* AppInitializer.m in Sources */,
 				FC324EBC228BD4840007BE08 /* AppConfig.m in Sources */,
-				FC324EBB228BD4840007BE08 /* LogItem.m in Sources */,
 				FC324EB9228BD4830007BE08 /* SDKManagerProxy.m in Sources */,
 				FC324EC0228BD7B30007BE08 /* FlutterMediator.m in Sources */,
 				978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */,
-				FC324EB3228BD4830007BE08 /* SDKLog.m in Sources */,
 				97C146F31CF9000F007C117D /* main.m in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
-				FC324EB8228BD4830007BE08 /* LogViewModel.m in Sources */,
-				FC324EB5228BD4830007BE08 /* JSTrace.m in Sources */,
-				FC324EB7228BD4830007BE08 /* JSLog.m in Sources */,
 				FC324EB2228BD4830007BE08 /* ResourceManager.m in Sources */,
-				FC324EB4228BD4830007BE08 /* JSError.m in Sources */,
 				FC324EBA228BD4840007BE08 /* WebServer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
