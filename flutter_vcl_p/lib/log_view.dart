@@ -1,12 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'log_model.dart';
-
-class LogView extends StatefulWidget {
-
-  @override
-  _LogViewState createState() => _LogViewState();
-}
+import 'package:provider/provider.dart';
 
 class LogItemRow extends StatelessWidget {
   final LogItem logItem;
@@ -58,10 +53,14 @@ class LogItemRow extends StatelessWidget {
   }
 }
 
+class LogView extends StatefulWidget {
+  @override
+  _LogViewState createState() => _LogViewState();
+}
 
-class _LogViewState extends State<LogView> implements LogModelListener  {
+
+class _LogViewState extends State<LogView> {
   final _model = LogModel.shared;
-  List<LogItem> _logs = [];
 
   void _onDelete() {
     showCupertinoDialog<bool>(context: context, builder: (context) {
@@ -88,59 +87,50 @@ class _LogViewState extends State<LogView> implements LogModelListener  {
 
 
   @override
-  onNewLogs() {
-    setState(() {
-      this._logs = _model.logs();
-    });
-  }
-
-  @override
   void initState() {
     super.initState();
-    _model.listener = this;
-
-    _model.loadLogs().then((v) {
-      if(v) {
-        setState(() {
-          _logs = _model.logs();
-        });
-      }
-    });
-
-  }
-
-
-  @override
-  void dispose() {
-    super.dispose();
-    _model.listener = null;
+    _model.loadLogs();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text('Log'),
-        trailing: CupertinoButton(
-            child: Icon(CupertinoIcons.delete),
-            onPressed: _onDelete,
-        ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView.builder(
-              itemCount: _logs.length * 2,
-              itemBuilder: (context, index) {
-                if (index % 2 != 0) {
-                  //divider
-                  return Divider();
-                }
-                index = index~/2;
-                final item = _logs[index];
-                return LogItemRow(item);
-              }
+    return ChangeNotifierProvider<LogModel>(
+      builder: (context) => _model,
+      child: CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          middle: Text('Log'),
+          trailing: CupertinoButton(
+              child: Icon(CupertinoIcons.delete),
+              onPressed: _onDelete,
           ),
+        ),
+        child: LogListView(),
+      ),
+    );
+  }
+}
+
+class LogListView extends StatelessWidget {
+  
+  @override
+  Widget build(BuildContext context) {
+    var logModel = Provider.of<LogModel>(context);
+    var logs = logModel.logs;
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+            itemCount: logs.length * 2,
+            itemBuilder: (context, index) {
+              if (index % 2 != 0) {
+                //divider
+                return Divider();
+              }
+              index = index~/2;
+              final item = logs[index];
+              return LogItemRow(item);
+            }
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:path/path.dart';
 import 'sdk_manager.dart';
+import 'package:flutter/foundation.dart';
 
 
 class LogItem {
@@ -33,30 +34,19 @@ class SDKLog extends LogItem {
   SDKLog(String message, DateTime timestamp) : super(message, timestamp);
 }
 
-abstract class LogModelListener {
-  onNewLogs();
-}
-
-class LogModel implements SDKLogDelegate {
+class LogModel with ChangeNotifier implements SDKLogDelegate {
   static final shared = LogModel();
   List<LogItem> _logs = [];
 
-  LogModelListener listener;
+  get logs => _logs;
 
   LogModel();
 
   Future<bool> loadLogs() async {
     //load logs from database
+
+    notifyListeners();
     return true;
-  }
-
-  Future<List<LogItem>> getLogs() async {
-
-    return _logs;
-  }
-
-  List<LogItem> logs() {
-    return _logs;
   }
 
   clearLogs() {
@@ -85,10 +75,7 @@ class LogModel implements SDKLogDelegate {
         break;
     }
     _logs.add(logItem);
-
-    if (listener != null) {
-      listener.onNewLogs();
-    }
+    notifyListeners();
   }
 
   LogItem parseJsError(String rawLog) {
