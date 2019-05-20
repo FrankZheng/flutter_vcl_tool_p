@@ -9,7 +9,6 @@ const String WEB_SERVER_CALLBACK_CHAN = "com.vungle.vcltool/webserverCallbacks";
 const String END_CARD_UPLOADED = "endcardUploaded";
 
 abstract class WebServerListener {
-  onServerURLAvailable(String serverURL);
   onEndCardUploaded(String zipName);
 }
 
@@ -29,13 +28,14 @@ class WebServer {
         listener.onEndCardUploaded(call.arguments);
       });
     });
+  }
 
-    webServerChan.invokeMethod(SERVER_URL).then((value) {
-      _listeners.forEach((listener) {
-        serverURL = value as String;
-        listener.onServerURLAvailable(value as String);
-      });
-    });
+  Future<String> getWebServerURL() async {
+    if(serverURL != null) {
+      return serverURL;
+    }
+    serverURL = await webServerChan.invokeMethod(SERVER_URL);
+    return serverURL;
   }
 
   Future<String> getEndCardName() async {

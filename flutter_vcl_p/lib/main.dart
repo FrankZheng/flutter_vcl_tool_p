@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import './home_view.dart';
-import './log_view.dart';
-import './settings_view.dart';
+import 'home_view.dart';
+import 'log_view.dart';
+import 'settings_view.dart';
 
-//import './vungle_sdk.dart';
+import 'sdk_manager.dart';
+import 'web_server.dart';
 
-void main() => runApp(MyApp());
+
+
+void main() {
+  //initialize sdk
+  WebServer.shared.getWebServerURL().then((url) {
+    if(url != null) {
+      SDKManager.shared.start(url);
+    }
+  });
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

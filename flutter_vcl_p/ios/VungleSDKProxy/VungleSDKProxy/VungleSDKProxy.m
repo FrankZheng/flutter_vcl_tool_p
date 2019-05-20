@@ -79,7 +79,6 @@ void onVungleAdPlayabilityUpdateWithoutError(id self, SEL _cmd, BOOL isAdPlayabl
     dispatch_once(&onceToken, ^{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-        NSLog(@"Create SDKManager instance");
         if([ObjcUtils isSelector:@selector(vungleAdPlayabilityUpdate:placementID:error:)
                       ofProtocol:@protocol(VungleSDKDelegate)]) {
             //add implementation at runtime to class
@@ -108,24 +107,31 @@ void onVungleAdPlayabilityUpdateWithoutError(id self, SEL _cmd, BOOL isAdPlayabl
     self = [super init];
     if (self) {
         _defaults = [NSUserDefaults standardUserDefaults];
+        _version = VungleSDKVersion;
     }
     return self;
 }
 
+- (void)setNetworkLoggingEnabled:(BOOL)networkLoggingEnabled {
+    [_defaults setBool:networkLoggingEnabled forKey:@"vungle.network_logging"];
+}
+
+
 - (BOOL)startWithAppId:(nonnull NSString *)appID
             placements:(nullable NSArray <NSString *> *)placements
+             serverURL:(NSURL *)serverURL
                  error:(NSError **)error {
     //if sdk not initialized, try to initialize
     //Should set end point before sdk instantiation, and url should not have "/" at the last.
     //It's tricky, but needed for 5.3.2 version
-    if(self.serverURL != nil) {
-        NSString *url = self.serverURL.absoluteString;
-        if([url characterAtIndex:url.length-1] == '/') {
-            url = [url substringWithRange:NSMakeRange(0,url.length-1)];
-        }
-        [_defaults setObject:url forKey:@"vungle.api_endpoint"];
+    _serverURL = serverURL;
+    NSString *url = self.serverURL.absoluteString;
+    if([url characterAtIndex:url.length-1] == '/') {
+        url = [url substringWithRange:NSMakeRange(0,url.length-1)];
     }
+    [_defaults setObject:url forKey:@"vungle.api_endpoint"];
     
+    _sdk = [VungleSDK sharedSDK];
     [_sdk setLoggingEnabled:YES];
     [_sdk attachLogger:self];
     _sdk.delegate = self;
@@ -142,7 +148,7 @@ void onVungleAdPlayabilityUpdateWithoutError(id self, SEL _cmd, BOOL isAdPlayabl
     return [_sdk isAdCachedForPlacementID:placementID];
 }
 
-- (BOOL)loadPlacementWithID:(NSString *)placementID placementerror:(NSError **)error {
+- (BOOL)loadPlacementWithID:(NSString *)placementID error:(NSError **)error {
     return [_sdk loadPlacementWithID:placementID error:error];
 }
 
@@ -231,10 +237,12 @@ void onVungleAdPlayabilityUpdateWithoutError(id self, SEL _cmd, BOOL isAdPlayabl
     if ([_delegate respondsToSelector:@selector(vungleDidCloseAdWithViewInfo:placementID:)]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
+        __weak typeof(self) weakSelf = self;
         if(![ObjcUtils isSelector:@selector(vungleDidCloseAdWithViewInfo:placementID:)
                        ofProtocol:@protocol(VungleSDKDelegate)]) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                
+                [weakSelf.delegate vungleDidCloseAdWithViewInfo:[[VungleSDKViewInfo alloc] initWithVungleViewInfo:info]
+                                            placementID:placementID];
             });
         }
 #pragma GCC diagnostic pop

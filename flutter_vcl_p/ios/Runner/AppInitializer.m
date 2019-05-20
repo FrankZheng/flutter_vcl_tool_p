@@ -54,16 +54,17 @@
     webServer.webUploadFolderPath = resourceManager.webUploadFolderPath;
     [webServer setup];
     
+#if 0
     SDKManagerProxy *proxy = [SDKManagerProxy sharedProxy];
     proxy.sdksFolderPath = resourceManager.sdksFolderPath;
     [proxy load:[config currentSdkVersion]];
-    
-    
+
     id<SDKManagerProtocol> sdkManager = [SDKManagerProxy sharedProxy].sdkManager;
     sdkManager.serverURL = webServer.serverURL;
     sdkManager.appId = [AppConfig appId];
     sdkManager.placementId = [AppConfig placementId];
     sdkManager.networkLoggingEnabled = YES;
+#endif
     
     _initialized = YES;
     for(NSValue *value in _delegates) {
@@ -74,7 +75,7 @@
     }
     
     //initialize sdk now
-    [sdkManager start];
+    //[sdkManager start];
 }
 
 

@@ -35,6 +35,9 @@
 		FC324EBA228BD4840007BE08 /* WebServer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EAA228BD4830007BE08 /* WebServer.m */; };
 		FC324EBC228BD4840007BE08 /* AppConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EAF228BD4830007BE08 /* AppConfig.m */; };
 		FC324EC0228BD7B30007BE08 /* FlutterMediator.m in Sources */ = {isa = PBXBuildFile; fileRef = FC324EBF228BD7B30007BE08 /* FlutterMediator.m */; };
+		FCDD95D62292379B00718B01 /* VungleSDKProxy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCDD95D52292379B00718B01 /* VungleSDKProxy.framework */; };
+		FCDD95D72292379B00718B01 /* VungleSDKProxy.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FCDD95D52292379B00718B01 /* VungleSDKProxy.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FCDD95DA2292384500718B01 /* VungleSDKMediator.m in Sources */ = {isa = PBXBuildFile; fileRef = FCDD95D92292384500718B01 /* VungleSDKMediator.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +47,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				FCDD95D72292379B00718B01 /* VungleSDKProxy.framework in Embed Frameworks */,
 				FC324E8B228BB64D0007BE08 /* GCDWebServers.framework in Embed Frameworks */,
 				FC324E8D228BB64D0007BE08 /* ZipArchive.framework in Embed Frameworks */,
 				3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */,
@@ -95,6 +99,9 @@
 		FC324EBD228BD5930007BE08 /* SDKManagerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDKManagerProtocol.h; sourceTree = "<group>"; };
 		FC324EBE228BD7B30007BE08 /* FlutterMediator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlutterMediator.h; sourceTree = "<group>"; };
 		FC324EBF228BD7B30007BE08 /* FlutterMediator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FlutterMediator.m; sourceTree = "<group>"; };
+		FCDD95D52292379B00718B01 /* VungleSDKProxy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = VungleSDKProxy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FCDD95D82292384500718B01 /* VungleSDKMediator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VungleSDKMediator.h; sourceTree = "<group>"; };
+		FCDD95D92292384500718B01 /* VungleSDKMediator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VungleSDKMediator.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +110,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */,
+				FCDD95D62292379B00718B01 /* VungleSDKProxy.framework in Frameworks */,
 				FC324E8A228BB64D0007BE08 /* GCDWebServers.framework in Frameworks */,
 				3B80C3941E831B6300D905FE /* App.framework in Frameworks */,
 				82135A56FD84BF75BFBB5FE2 /* libPods-Runner.a in Frameworks */,
@@ -139,6 +147,7 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
+				FCDD95D52292379B00718B01 /* VungleSDKProxy.framework */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
@@ -175,6 +184,8 @@
 				7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */,
 				FC324EBE228BD7B30007BE08 /* FlutterMediator.h */,
 				FC324EBF228BD7B30007BE08 /* FlutterMediator.m */,
+				FCDD95D82292384500718B01 /* VungleSDKMediator.h */,
+				FCDD95D92292384500718B01 /* VungleSDKMediator.m */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -365,6 +376,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCDD95DA2292384500718B01 /* VungleSDKMediator.m in Sources */,
 				FC324EB6228BD4830007BE08 /* AppInitializer.m in Sources */,
 				FC324EBC228BD4840007BE08 /* AppConfig.m in Sources */,
 				FC324EB9228BD4830007BE08 /* SDKManagerProxy.m in Sources */,

@@ -32,14 +32,6 @@ class _HomeViewState extends State<HomeView> implements WebServerListener, SDKDe
   }
 
   @override
-  onServerURLAvailable(String serverURL) {
-    setState(() {
-      _serverURL = serverURL;
-    });
-  }
-
-
-  @override
   onEndCardUploaded(String zipName) {
     if (!_playingAd) {
 
@@ -72,6 +64,7 @@ class _HomeViewState extends State<HomeView> implements WebServerListener, SDKDe
 
     _webServer.addListener(this);
     _webServer.start();
+
     _webServer.getEndCardName().then((name) {
       if(name != null ) {
         _sdkManager.loadAd();
@@ -80,6 +73,12 @@ class _HomeViewState extends State<HomeView> implements WebServerListener, SDKDe
         });
       }
     });
+
+    _webServer.getWebServerURL().then((url){
+      setState(() {
+        _serverURL = url;
+      });
+    });
   }
 
 
@@ -87,6 +86,7 @@ class _HomeViewState extends State<HomeView> implements WebServerListener, SDKDe
   void dispose() {
     super.dispose();
     _webServer.removeListener(this);
+    _sdkManager.removeDelegate(this);
   }
 
   @override
@@ -161,17 +161,14 @@ class _HomeViewState extends State<HomeView> implements WebServerListener, SDKDe
 
   @override
   void onAdDidClose() {
+    print('onAdDidClose, reload ad');
     setState(() {
       _playingAd = false;
     });
+
     new Timer(Duration(seconds: 1), () {
        _sdkManager.loadAd();
     });
-  }
-
-  @override
-  void onSDKLog(String message) {
-
   }
 
 }

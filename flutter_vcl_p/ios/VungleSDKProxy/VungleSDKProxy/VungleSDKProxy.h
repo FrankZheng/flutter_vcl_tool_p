@@ -49,18 +49,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly) NSString* version;
 @property (atomic, readonly, getter = isInitialized) BOOL initialized;
 @property(nonatomic, weak) id<VungleSDKProxyDelegate> delegate;
-@property(nonatomic, copy) NSURL* serverURL;
+@property(nonatomic, readonly) NSURL* serverURL;
 @property(nonatomic, assign) BOOL networkLoggingEnabled;
 
 +(instancetype)sharedProxy;
 
 - (BOOL)startWithAppId:(nonnull NSString *)appID
             placements:(nullable NSArray <NSString *> *)placements
+             serverURL:(NSURL *)serverURL
                  error:(NSError **)error;
 
 - (BOOL)isAdCachedForPlacementID:(nonnull NSString *)placementID;
 
-- (BOOL)loadPlacementWithID:(NSString *)placementID placementerror:(NSError **)error;
+- (BOOL)loadPlacementWithID:(NSString *)placementID error:(NSError **)error;
 
 - (BOOL)playAd:(UIViewController *)controller
        options:(nullable NSDictionary *)options

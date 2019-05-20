@@ -1,8 +1,9 @@
-#include "AppDelegate.h"
-#include "GeneratedPluginRegistrant.h"
-#include "FlutterMediator.h"
-#include "AppInitializer.h"
-#include "AppConfig.h"
+#import "AppDelegate.h"
+#import "GeneratedPluginRegistrant.h"
+#import "FlutterMediator.h"
+#import "AppInitializer.h"
+#import "AppConfig.h"
+#import "VungleSDKMediator.h"
 
 @interface AppDelegate()
 
@@ -12,13 +13,13 @@
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
-    [GeneratedPluginRegistrant registerWithRegistry:self];
     [[AppInitializer sharedInstance] start];
     
+    [GeneratedPluginRegistrant registerWithRegistry:self];
     
     FlutterViewController *controller = (FlutterViewController*)self.window.rootViewController;
     [[FlutterMediator sharedInstance] startWithFlutterViewController:controller];
+    [[VungleSDKMediator sharedInstance] startWithFlutterViewController:controller];
     
     return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
