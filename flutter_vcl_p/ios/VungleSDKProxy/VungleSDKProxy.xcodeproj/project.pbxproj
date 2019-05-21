@@ -17,6 +17,7 @@
 		F6E2C6DF2291953B00EFD9E9 /* ForceCloseAdDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E2C6DE2291953B00EFD9E9 /* ForceCloseAdDelegate.h */; };
 		F6E2C6E22291965600EFD9E9 /* VunglePostRollWebViewHooks.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E2C6E02291965600EFD9E9 /* VunglePostRollWebViewHooks.h */; };
 		F6E2C6E32291965600EFD9E9 /* VunglePostRollWebViewHooks.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E2C6E12291965600EFD9E9 /* VunglePostRollWebViewHooks.m */; };
+		FCDD95DD2293E36200718B01 /* inject.js in Resources */ = {isa = PBXBuildFile; fileRef = FCDD95DC2293E36200718B01 /* inject.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +44,7 @@
 		F6E2C6DE2291953B00EFD9E9 /* ForceCloseAdDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ForceCloseAdDelegate.h; sourceTree = "<group>"; };
 		F6E2C6E02291965600EFD9E9 /* VunglePostRollWebViewHooks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VunglePostRollWebViewHooks.h; sourceTree = "<group>"; };
 		F6E2C6E12291965600EFD9E9 /* VunglePostRollWebViewHooks.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VunglePostRollWebViewHooks.m; sourceTree = "<group>"; };
+		FCDD95DC2293E36200718B01 /* inject.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = inject.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 		F6E2C6B42291595400EFD9E9 /* VungleSDKProxy */ = {
 			isa = PBXGroup;
 			children = (
+				FCDD95DB2293E34900718B01 /* js */,
 				F6E2C6B52291595400EFD9E9 /* VungleSDKProxy.h */,
 				F6E2C6D822915A8E00EFD9E9 /* VungleSDKProxy.m */,
 				F6E2C6DA22918FE100EFD9E9 /* ObjcUtils.h */,
@@ -114,6 +117,14 @@
 				F6E2C6D6229159F500EFD9E9 /* VungleSDK.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FCDD95DB2293E34900718B01 /* js */ = {
+			isa = PBXGroup;
+			children = (
+				FCDD95DC2293E36200718B01 /* inject.js */,
+			);
+			path = js;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -209,6 +220,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCDD95DD2293E36200718B01 /* inject.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

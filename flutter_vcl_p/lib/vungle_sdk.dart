@@ -24,24 +24,6 @@ const METHOD_RETURN_VALUE = "return";
 const ERROR_CODE = "errCode";
 const ERROR_MESSAGE = "errMsg";
 
-class _ViewInfo {
-  bool completed = false;
-  bool didDownload = false;
-  int playTime = 0;
-
-  _ViewInfo.createFromMap(Map<dynamic, dynamic> map) {
-    if (map.containsKey('completed')) {
-      completed = map['completed'];
-    }
-    if (map.containsKey('didDownload')) {
-      didDownload = map['didDownload'];
-    }
-    if (map.containsKey('playTime')) {
-      playTime = map['playTime'];
-    }
-  }
-}
-
 class VungleException implements Exception {
   final int code;
   final String message;
@@ -151,6 +133,9 @@ class VungleSDK {
         break;
       case AD_DID_CLOSE:
         _onAdClose(call.arguments, true);
+        break;
+      case ON_LOG:
+        listener.onLog(call.arguments['type'] as String, call.arguments['rawLog'] as String);
         break;
       default:
         throw new MissingPluginException("Method not implemented");
